@@ -21,10 +21,11 @@ install:
   # Coverage packages are on my binstar channel
   - conda install --yes -c dan_blanchard python-coveralls nose-cov
   - python setup.py install
+  # FIXME I DONT KNOW HOW TO MAKE NOSE WORK IF WE DONT ALSO BUILD IN PLACE
+  - python setup.py build_ext --inplace
 # Run test
 script:
-  - export SOURCEDIR=`pwd`
-  - nosetests $SOURCEDIR/tests/
+  - nosetests 
  
 addons:
   apt:
