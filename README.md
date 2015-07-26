@@ -1,4 +1,6 @@
 # PyBM3D
+[![Build Status](https://travis-ci.org/ericmjonas/pybm3d.svg?branch=master)](https://travis-ci.org/ericmjonas/pybm3d)
+
 
 > So you want to denoise some images, or maybe shrink inside a projected
 > gradient algorithm?
