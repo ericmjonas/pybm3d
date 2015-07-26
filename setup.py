@@ -21,4 +21,10 @@ setup(
     name='pybm3d',
     ext_modules=ext_modules,
 
+    version='1.0',
+    description='Python wrapper around BM3d',
+    author='Eric Jonas',
+    author_email='jonas@ericjonas.com',
+    url='https://github.com/ericmjonas/pybm3d', 
+    packages=['pybm3d']
 )

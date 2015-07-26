@@ -24,7 +24,7 @@ install:
  
 # Run test
 script:
-  - nosetests 
+  - nosetests tests/
  
 addons:
   apt:
