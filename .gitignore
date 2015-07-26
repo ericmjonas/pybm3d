@@ -2,3 +2,5 @@
 *.pyc
 *.so
 build/
+pybm3d/*.cpp
+pybm3d/*.c
