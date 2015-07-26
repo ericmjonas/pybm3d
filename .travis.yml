@@ -26,3 +26,7 @@ install:
 script:
   - nosetests 
  
+addons:
+  apt:
+    packages:
+    - libfftw3-dev
