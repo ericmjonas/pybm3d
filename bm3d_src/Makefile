@@ -27,12 +27,12 @@ CXXOPT	= $(COPT)
 
 # C compilation flags
 CFLAGS	= $(COPT) -Wall -Wextra \
-	-Wno-write-strings -ansi
+	-Wno-write-strings -ansi -I/usr/local/include
 # C++ compilation flags
-CXXFLAGS	= $(CXXOPT) -Wall -Wextra \
-	-Wno-write-strings -Wno-deprecated -ansi
+CXXFLAGS	=  $(CXXOPT) -Wall -Wextra \
+	-Wno-write-strings -Wno-deprecated -ansi -I/usr/local/include
 # link flags
-LDFLAGS	= -lpng -lm -lfftw3f
+LDFLAGS	= -lpng -lm -lfftw3f -L/usr/local/lib
 
 # use openMP with `make OMP=1`
 ifdef OMP
@@ -49,7 +49,7 @@ endif
 	$(CC) -c -o $@  $< $(CFLAGS)
 # partial compilation of C++ source code
 %.o: %.cpp %.h
-	$(CXX) -c -o $@  $< $(CXXFLAGS)
+	$(CXX) -c -o $@  $< $(CXXFLAGS)<
 
 # link all the object code
 $(BIN): $(OBJ) $(LIBDEPS)

@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 	if(load_image(argv[1], img, &width, &height, &chnls) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
+    cout << "Image loaded" << endl; 
 	//! Variables initialization
 	float          fSigma       = atof(argv[2]);
 	const bool     useSD_1      = (bool) atof(argv[11]);
@@ -63,6 +64,8 @@ int main(int argc, char **argv)
         cout << " -bior" << endl;
         return EXIT_FAILURE;
     }
+    cout << "tau 2d hard set" << endl; 
+
 	const unsigned tau_2D_wien  = (strcmp(argv[12], "dct" ) == 0 ? DCT :
                                   (strcmp(argv[12], "bior") == 0 ? BIOR : NONE));
     if (tau_2D_wien == NONE)
@@ -72,6 +75,7 @@ int main(int argc, char **argv)
         cout << " -bior" << endl;
         return EXIT_FAILURE;
     };
+    cout << "2d wein set" << endl; 
 	const unsigned color_space  = (strcmp(argv[14], "rgb"  ) == 0 ? RGB   :
                                   (strcmp(argv[14], "yuv"  ) == 0 ? YUV   :
                                   (strcmp(argv[14], "ycbcr") == 0 ? YCBCR :
@@ -88,7 +92,7 @@ int main(int argc, char **argv)
 	unsigned       wh           = (unsigned) width * height;
 	unsigned       whc          = (unsigned) wh * chnls;
 	bool           compute_bias = (bool) atof(argv[9]);
-
+    cout << "Ready to resize" << endl; 
 	img_noisy.resize(whc);
 	img_diff.resize(whc);
 	if (compute_bias)
@@ -103,6 +107,16 @@ int main(int argc, char **argv)
 	add_noise(img, img_noisy, fSigma);
     cout << "done." << endl;
 
+    cout << "useSD_1=" << useSD_1 << std::endl; 
+    cout << "useSD_2=" << useSD_2 << std::endl; 
+    cout << "tau_2D_hard=" << tau_2D_hard << std::endl; 
+    cout << "tau_2D_wein=" << tau_2D_wien << std::endl;
+
+    cout << "LETS DEBUG THIS IMAGE" << endl;
+    for(int i = 0; i < 10; ++i) {
+        cout << "img_noisy[" << i << "]=" << img_noisy[i] << endl; 
+    }
+    
     //! Denoising
     if (run_bm3d(fSigma, img_noisy, img_basic, img_denoised, width, height, chnls,
                  useSD_1, useSD_2, tau_2D_hard, tau_2D_wien, color_space)
