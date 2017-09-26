@@ -1,6 +1,0 @@
-bm3d_src/mt19937ar.c
-pybm3d/bm3d.c
-pybm3d.egg-info/PKG-INFO
-pybm3d.egg-info/SOURCES.txt
-pybm3d.egg-info/dependency_links.txt
-pybm3d.egg-info/top_level.txt
