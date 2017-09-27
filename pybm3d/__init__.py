@@ -1,1 +1,1 @@
-import bm3d
+import pybm3d.bm3d
