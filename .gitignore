@@ -1,6 +1,29 @@
-*~
-*.pyc
-*.so
-build/
 pybm3d/*.cpp
 pybm3d/*.c
+*.png
+
+# Distribution / packaging
+build/
+*.egg-info/
+*.eggs
+
+# C extensions
+*.so
+
+# OSX
+.DS_Store
+
+# Text editor backup files
+*~
+*.swp
+
+# Python
+.venv
+*.pyc
+__pycache__
+.ipynb_checkpoints
+.python-version
+
+# Unit test / coverage reports
+.tox/
+.cache
