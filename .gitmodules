@@ -1,0 +1,3 @@
+[submodule "bm3d_src"]
+	path = bm3d_src
+	url = https://github.com/gfacciol/bm3d.git
