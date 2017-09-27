@@ -1,6 +1,7 @@
-# PyBM3D
-[![Build Status](https://travis-ci.org/ericmjonas/pybm3d.svg?branch=master)](https://travis-ci.org/ericmjonas/pybm3d)
+PyBM3D
+=======
 
+|license| |unix_build|
 
 > So you want to denoise some images, or maybe shrink inside a projected
 > gradient algorithm?
@@ -11,7 +12,7 @@ http://www.ipol.im/pub/art/2012/l-bm3d/
 
 License is GPL3 per his original source.
 
-The cython wrappings are minimalistic. 
+The cython wrappings are minimalistic.
 
 Example
 -------
@@ -22,7 +23,7 @@ Example
 |                                                                              |
 |  import numpy as np                                                          |
 |  import skimage.data                                                         |
-|  import scipy.misc                                                           | 
+|  import scipy.misc                                                           |
 |                                                                              |
 |  import pybm3d                                                               |
 |                                                                              |
@@ -44,3 +45,13 @@ Example
 License
 -------
 This project is released under the terms of the `GPL3 license <https://opensource.org/licenses/GPL-3.0>`_.
+
+
+.. |license| image:: https://img.shields.io/badge/License-GPL%20v3-blue.svg
+    :target: https://www.gnu.org/licenses/gpl-3.0
+    :alt: License: GPL v3
+
+.. |unix_build| image:: https://img.shields.io/travis/ericmjonas/pybm3d.svg?branch=master&style=flat&label=unix%20build
+    :target: https://travis-ci.org/ericmjonas/pybm3d/
+    :alt: Travis-CI Status
+
