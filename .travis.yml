@@ -32,6 +32,8 @@ matrix:
       - virtualenv env -p python3
       - source env/bin/activate
     env: TOX_ENV=py36
+  - python: "3.6"
+    env: TOX_ENV=flake8
 
 script:
   - tox -e $TOX_ENV
