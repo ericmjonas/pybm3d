@@ -1,23 +1,24 @@
-# distutils: language = c++
+# setuptools: language = c++
+import numpy as np
 
 from libcpp.vector cimport vector
 from libcpp cimport bool
 cimport numpy as np
-import numpy as np
 
 
 cdef extern from "../bm3d_src/bm3d.h":
-    int run_bm3d( const float sigma, vector[float] &img_noisy,
-                  vector[float] &img_basic,
-                  vector[float] &img_denoised,
-                  const unsigned width,
-                  const unsigned height,
-                  const unsigned chnls,
-                  const bool useSD_h,
-                  const bool useSD_w,
-                  const unsigned tau_2D_hard,
-                  const unsigned tau_2D_wien,
-                  const unsigned color_space)
+    int run_bm3d(const float sigma, vector[float] &img_noisy,
+                 vector[float] &img_basic,
+                 vector[float] &img_denoised,
+                 const unsigned width,
+                 const unsigned height,
+                 const unsigned chnls,
+                 const bool useSD_h,
+                 const bool useSD_w,
+                 const unsigned tau_2D_hard,
+                 const unsigned tau_2D_wien,
+                 const unsigned color_space)
+
 
 cdef extern from "../bm3d_src/utilities.h":
     int save_image(char * name, vector[float] & img,
@@ -25,12 +26,6 @@ cdef extern from "../bm3d_src/utilities.h":
                    const unsigned height,
                    const unsigned chnls)
 
-
-def hello():
-    return "Hello World"
-
-# def random():
-#     return mt_genrand_res53()
 
 cpdef float[:, :, :] bm3d(float[:, :, :] input_array,
                           float sigma,
@@ -74,14 +69,14 @@ cpdef float[:, :, :] bm3d(float[:, :, :] input_array,
 
     if tau_2D_hard == "DCT":
         tau_2D_hard_i = 4
-    elif tau_2D_hard == "BIOR" :
+    elif tau_2D_hard == "BIOR":
         tau_2D_hard_i = 5
     else:
         raise ValueError("Unknown tau_2d_hard, must be DCT or BIOR")
 
     if tau_2D_wien == "DCT":
         tau_2D_wien_i = 4
-    elif tau_2D_wien == "BIOR" :
+    elif tau_2D_wien == "BIOR":
         tau_2D_wien_i = 5
     else:
         raise ValueError("Unknown tau_2d_wien, must be DCT or BIOR")
@@ -99,7 +94,6 @@ cpdef float[:, :, :] bm3d(float[:, :, :] input_array,
 
     cdef np.ndarray output_array = np.zeros([height, width, chnls],
                                             dtype=np.float32)
-
 
     pos = 0
     for i in range(input_array.shape[0]):

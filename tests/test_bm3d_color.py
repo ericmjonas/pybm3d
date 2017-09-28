@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # coding=utf-8
+"""Tests for BM3D color image denoising."""
 
-import pytest
 import numpy as np
 import skimage.data
 
 import pybm3d
 
-def test_bm3d_color():
-    # stupid simple test, do we denoise at all?
 
-    x  = skimage.data.astronaut().astype(np.float32)
-    #x.shape = x.shape[0], x.shape[1], 1 # correct # of chan
+def test_bm3d_color():
+    """Tests BM3D color image denoising."""
+    x= skimage.data.astronaut().astype(np.float32)
 
     noise = np.random.normal(0, 40, x.shape).astype(np.float32)
     xn = x + noise
