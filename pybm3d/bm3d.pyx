@@ -59,7 +59,9 @@ cpdef float[:, :, :] bm3d(float[:, :, :] input_array,
 
     cdef vector[float] input_image, basic_image, output_image, denoised_image
 
-    height, width, chnls = input_array.shape
+    height = input_array.shape[0]
+    width = input_array.shape[1]
+    chnls = input_array.shape[2]
 
     # convert the input image
     input_image.resize(input_array.size)
