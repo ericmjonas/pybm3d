@@ -31,6 +31,7 @@ ext_modules = [Extension("pybm3d.bm3d",
                                   "bm3d_src/lib_transforms.cpp",
                                   "bm3d_src/utilities.cpp", ],
                          language="c++",
+                         extra_compile_args=['-std=c++11'],
                          libraries=["png", "tiff", "jpeg", "fftw3", "fftw3f"])]
 
 setup(
