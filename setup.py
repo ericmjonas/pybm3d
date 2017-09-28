@@ -4,75 +4,115 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 
 
-def customize_compiler_for_nvcc(self):
-    """inject deep into distutils to customize how the dispatch
-    to gcc/nvcc works.
-
-    If you subclass UnixCCompiler, it's not trivial to get your subclass
-    injected in, and still have the right customizations (i.e.
-    distutils.sysconfig.customize_compiler) run on it. So instead of going
-    the OO route, I have this. Note, it's kindof like a wierd functional
-    subclassing going on."""
-
-    # tell the compiler it can processes .cu
-    self.src_extensions.append('.cu')
-
-    # save references to the default compiler_so and _comple methods
-    default_compiler_so = self.compiler_so
-    super = self._compile
-
-    # now redefine the _compile method. This gets executed for each
-    # object but distutils doesn't have the ability to change compilers
-    # based on source extension: we add it.
-    def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
-        if os.path.splitext(src)[1] == '.cu':
-            # use the cuda for .cu files
-            self.set_executable('compiler_so', CUDA['nvcc'])
-            # use only a subset of the extra_postargs, which are 1-1 translated
-            # from the extra_compile_args in the Extension class
-            postargs = extra_postargs['nvcc']
-        else:
-            postargs = extra_postargs['gcc']
-
-        if os.path.splitext(src)[1] == '.c':
-            postargs.append('-std=c99')
-
-        super(obj, src, ext, cc_args, postargs, pp_opts)
-        # reset the default compiler_so, which we might have changed for cuda
-        self.compiler_so = default_compiler_so
-
-    # inject our redefined _compile method into the class
-    self._compile = _compile
-
-
 class CustomBuildExt(_build_ext):
-    """Custom build extension class.
+    """Custom build extension class."""
 
-    The class injects NumPy C include directories into the Cython compilation
-    after NumPy was installed and is available. This allows us to not depend on
-    a preinstalled NumPy but automatically install NumPy with the
-    setup_requires arguement.
-    """
+    def __init__(self, *args, **kwargs):
+        """Extends default class constructor."""
+        # _build_ext is not a new-style (object) class, which is required for
+        # super to work
+        _build_ext.__init__(self, *args, **kwargs)
+        self.cuda_config = self.load_cuda_config()
 
     def build_extensions(self):
-        customize_compiler_for_nvcc(self.compiler)
+        """Extends default build_extensions method.
+
+        Further customizes the compiler to add C file specific compile
+        arguments and support nvcc compilation of *.cu CUDA files."""
+
+        self.customize_compiler_for_c_args_and_nvcc()
         _build_ext.build_extensions(self)
 
     def finalize_options(self):
-        """Injects Numpy C include directories.
+        """Extends default finalize_options method.
 
-        Overrides default finalize_options method.
-        """
+        Injects NumPy`s C include directories into the Cython compilation. This
+        is done after NumPy was installed through the setuptools setup_requires
+        argument which removes NumPy from the necessary preinstalled
+        packages."""
+
         _build_ext.finalize_options(self)
         # prevent numpy from thinking it is still in its setup process
         __builtins__.__NUMPY_SETUP__ = False
         import numpy
         self.include_dirs.append(numpy.get_include())
 
+    def customize_compiler_for_c_args_and_nvcc(self):
+        """Customize the compiler.
+
+        The customization adds C file specific compile
+        arguments and support for nvcc compilation of *.cu CUDA files."""
+
+        self.compiler.src_extensions.append('.cu')
+
+        # save references to the default compiler_so and _comple methods
+        default_compiler_so = self.compiler.compiler_so
+        super = self.compiler._compile
+
+        # now redefine the _compile method. This gets executed for each
+        # object but distutils doesn't have the ability to change compilers
+        # based on source extension: we add it.
+        def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
+            if os.path.splitext(src)[1] == '.cu':
+                # use the nvcc for *.cu files
+                self.compiler.set_executable('compiler_so', CUDA['nvcc'])
+                postargs = extra_postargs['nvcc']
+            else:
+                postargs = extra_postargs['unix']
+
+                # add C file specific compile arguments
+                if os.path.splitext(src)[1] == '.c':
+                    postargs = postargs + extra_postargs['c_args']
+
+            super(obj, src, ext, cc_args, postargs, pp_opts)
+            # reset the default compiler_so
+            self.compiler.compiler_so = default_compiler_so
+
+        # inject our redefined _compile method into the class
+        self.compiler._compile = _compile
+
+    @staticmethod
+    def load_cuda_config():
+        """Locate the CUDA environment on the system
+        Returns a dict with keys 'home', 'nvcc', 'include', and 'lib64'
+        and values giving the absolute path to each directory.
+        """
+        def find_in_path(name, path):
+            """Finds a file by name in a search path."""
+            for dir in path.split(os.pathsep):
+                binpath = os.path.join(dir, name)
+                if os.path.exists(binpath):
+                    return os.path.abspath(binpath)
+            return None
+
+        # first check if the CUDA_HOME env variable is in use
+        if 'CUDA_HOME' in os.environ:
+            home = os.environ['CUDA_HOME']
+            nvcc = os.path.join(home, 'bin', 'nvcc')
+        else:
+            # otherwise, search the PATH for NVCC
+            nvcc = find_in_path('nvcc', os.environ['PATH'])
+            if nvcc is None:
+                return {'cuda_available': False}
+                raise EnvironmentError('The nvcc binary could not be located '
+                                       'in your $PATH. Either add it to your '
+                                       'path, or set $CUDA_HOME')
+            home = os.path.dirname(os.path.dirname(nvcc))
+
+        cuda_config = {'home': home, 'nvcc': nvcc,
+                      'include': os.path.join(home, 'include'),
+                      'lib64': os.path.join(home, 'lib64')}
+        for k, v in cuda_config.items():
+            if not os.path.exists(v):
+                raise EnvironmentError('The CUDA %s path could not be located '
+                                       'in %s' % (k, v))
+
+        return cuda_config
+
 
 # optimize to the current CPU and enable warnings
-extra_compile_args = {'gcc': ['-march=native', '-Wall', '-Wextra', ],
-                      'clang': ['-march=native', '-Wall', '-Wextra', ]}
+extra_compile_args = {'unix': ['-march=native', '-Wall', '-Wextra', ],
+                      'c_args': ['-std=c99', ]}
 libraries = ["png", "tiff", "jpeg", "fftw3", "fftw3f"]
 ext_modules = [Extension("pybm3d.bm3d",
                          language="c++",
