@@ -55,7 +55,8 @@ class CustomBuildExt(_build_ext):
         def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
             if os.path.splitext(src)[1] == '.cu':
                 # use the nvcc for *.cu files
-                self.compiler.set_executable('compiler_so', CUDA['nvcc'])
+                self.compiler.set_executable('compiler_so',
+                                             self.cuda_config['nvcc'])
                 postargs = extra_postargs['nvcc']
             else:
                 postargs = extra_postargs['unix']
@@ -100,8 +101,8 @@ class CustomBuildExt(_build_ext):
             home = os.path.dirname(os.path.dirname(nvcc))
 
         cuda_config = {'home': home, 'nvcc': nvcc,
-                      'include': os.path.join(home, 'include'),
-                      'lib64': os.path.join(home, 'lib64')}
+                       'include': os.path.join(home, 'include'),
+                       'lib64': os.path.join(home, 'lib64')}
         for k, v in cuda_config.items():
             if not os.path.exists(v):
                 raise EnvironmentError('The CUDA %s path could not be located '
@@ -126,7 +127,7 @@ ext_modules = [Extension("pybm3d.bm3d",
 
 setup(
     name='pybm3d',
-    version='0.1.0',
+    version='0.2.0',
     description='Python wrapper around BM3D',
     author='Eric Jonas',
     author_email='jonas@ericjonas.com',
