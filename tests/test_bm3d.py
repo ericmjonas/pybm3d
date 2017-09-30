@@ -5,6 +5,7 @@
 import pytest
 import numpy as np
 import skimage.data
+from skimage.measure import compare_psnr
 
 import pybm3d
 
@@ -13,9 +14,9 @@ import pybm3d
 def noise_data():
     """Provide grayscale data for denoising."""
     noise_std_dev = 40.0
-    img = skimage.data.camera().astype(np.float32)
+    img = skimage.data.camera()
 
-    noise = np.random.normal(0, noise_std_dev, img.shape).astype(np.float32)
+    noise = np.random.normal(0, noise_std_dev, img.shape).astype(img.dtype)
     noisy_img = np.clip(img + noise, 0, 255)
     return img, noisy_img, noise_std_dev
 
@@ -24,9 +25,9 @@ def noise_data():
 def color_noise_data():
     """Provide color data for denoising."""
     noise_std_dev = 40.0
-    img = skimage.data.astronaut().astype(np.float32)
+    img = skimage.data.astronaut()
 
-    noise = np.random.normal(0, noise_std_dev, img.shape).astype(np.float32)
+    noise = np.random.normal(0, noise_std_dev, img.shape).astype(img.dtype)
     noisy_img = np.clip(img + noise, 0, 255)
     return img, noisy_img, noise_std_dev
 
@@ -42,12 +43,11 @@ def test_bm3d(noise_data):
     img, noisy_img, noise_std_dev = noise_data
 
     out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
-    out = np.clip(out, 0, 255)
 
-    noise_error = np.sum(np.abs(noisy_img - img))
-    out_error = np.sum(np.abs(out - img))
+    noise_psnr = compare_psnr(img, noisy_img)
+    out_psnr = compare_psnr(img, out)
 
-    assert noise_error > 4 * out_error
+    assert out_psnr > noise_psnr
 
 
 def test_bm3d_color(color_noise_data):
@@ -55,17 +55,16 @@ def test_bm3d_color(color_noise_data):
     img, noisy_img, noise_std_dev = color_noise_data
 
     out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
-    out = np.clip(out, 0, 255)
 
-    noise_error = np.sum(np.abs(noisy_img - img))
-    out_error = np.sum(np.abs(out - img))
+    noise_psnr = compare_psnr(img, noisy_img)
+    out_psnr = compare_psnr(img, out)
 
-    assert noise_error > 2 * out_error
+    assert out_psnr > noise_psnr
 
 
 def test_fail_patch_size_param(noise_data):
     """Tests expected failure for wrong patch_size parameter value."""
-    img, noisy_img, noise_std_dev = noise_data
+    _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
         pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, patch_size=-1)
@@ -73,7 +72,7 @@ def test_fail_patch_size_param(noise_data):
 
 def test_fail_tau_2d_hard_param(noise_data):
     """Tests expected failure for wrong tau_2D_hard parameter value."""
-    img, noisy_img, noise_std_dev = noise_data
+    _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
         pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, tau_2D_hard="not_supported")
@@ -81,7 +80,7 @@ def test_fail_tau_2d_hard_param(noise_data):
 
 def test_fail_tau_2d_wien_param(noise_data):
     """Tests expected failure for wrong tau_2D_wien parameter value."""
-    img, noisy_img, noise_std_dev = noise_data
+    _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
         pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, tau_2D_wien="not_supported")
@@ -89,7 +88,7 @@ def test_fail_tau_2d_wien_param(noise_data):
 
 def test_fail_color_space_param(noise_data):
     """Tests expected failure for wrong tau_2D_wien parameter value."""
-    img, noisy_img, noise_std_dev = noise_data
+    _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
         pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, color_space="not_supported")

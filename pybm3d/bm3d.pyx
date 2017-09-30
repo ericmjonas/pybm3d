@@ -115,17 +115,26 @@ cpdef float[:,:,:] run_bm3d_wrap(
     return output_array
 
 
-def bm3d(input_array, *args, **kwargs):
+def bm3d(input_array, *args, clip=True, **kwargs):
     """Applies BM3D to the given input_array.
 
-    This function calls the Cython wrapped run_bm3d C function. Inputs must be
-    of type Float and have a third channel dimension.
+    This function calls the Cython wrapped run_bm3d C function. Before inputs
+    are preprocessed:
+    1. Convert to type Float
+    2. If necessary, add third channel dimension
     """
     input_array = np.array(input_array)
-    initial_shape = input_array.shape
+    initial_shape, initial_dtype = input_array.shape, input_array.dtype
+
     input_array = np.atleast_3d(input_array).astype(np.float32)
 
     out = run_bm3d_wrap(input_array, *args, **kwargs)
-    out = np.array(out).reshape(initial_shape)
+    out = np.array(out, dtype=initial_dtype).reshape(initial_shape)
+    if clip:
+        if np.issubdtype(initial_dtype, np.integer):
+            dtype_info = np.iinfo(initial_dtype)
+        else:
+            dtype_info = np.finfo(initial_dtype)
+        out = np.clip(out, dtype_info.min, dtype_info.max)
 
     return out
