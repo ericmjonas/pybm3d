@@ -1,7 +1,7 @@
 PyBM3D
 =======
 
-|license| |unix_build|
+|license| |unix_build| |code_quality|
 
     | *So you want to denoise some images, or maybe shrink inside a projected gradient algorithm?*
 
@@ -11,7 +11,7 @@ The core C implementation of BM3D is based on the `work <http://www.ipol.im/pub/
 
 Installation
 ____________
-PyBM3D is supported for Linux and OSX and Python 2.7.X and 3.X. Please follow the installation instructions:
+PyBM3D is supported for Linux and OSX and Python 2.7 and 3.6. Please follow the installation instructions:
 
 1. FFTW3:
 
@@ -29,22 +29,25 @@ ________
 |                                                                              |
 |  import numpy as np                                                          |
 |  import skimage.data                                                         |
-|  import scipy.misc                                                           |
+|  from skimage.measure import compare_psnr                                    |
 |                                                                              |
 |  import pybm3d                                                               |
 |                                                                              |
 |                                                                              |
 |  noise_std_dev = 40                                                          |
-|  img = skimage.data.astronaut().astype(np.float32)                           |
+|  img = skimage.data.astronaut()                                              |
 |  noise = np.random.normal(scale=noise_std_dev,                               |
-|                           size=img.shape).astype(np.float32)                 |
+|                           size=img.shape).astype(img.dtype)                  |
 |                                                                              |
 |  noisy_img = img + noise                                                     |
 |                                                                              |
-|  scipy.misc.imsave("noisy_img.png", noisy_img)                               |
-|                                                                              |
 |  out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)                            |
-|  scipy.misc.imsave("out.png", out)                                           |
+|                                                                              |
+|  noise_psnr = compare_psnr(img, noisy_img)                                   |
+|  out_psnr = compare_psnr(img, out)                                           |
+|                                                                              |
+|  print("PSNR of noisy image: ", noise_psnr)                                  |
+|  print("PSNR of reconstructed image: ", out_psnr)                            |
 |                                                                              |
 +------------------------------------------------------------------------------+
 
@@ -61,3 +64,6 @@ This project is released under the terms of the `GPL3 license <https://opensourc
     :target: https://travis-ci.org/ericmjonas/pybm3d/
     :alt: Travis-CI Status
 
+.. |code_quality| image:: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/badges/quality-score.png?b=develop
+    :target: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/?branch=develop
+    :alt: Scrutinizer Code Quality
