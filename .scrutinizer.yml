@@ -1,0 +1,8 @@
+checks:
+    python:
+        code_rating: true
+        duplicate_code: true
+build:
+    tests:
+        override:
+            - tox -e flake8
