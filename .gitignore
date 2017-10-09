@@ -6,6 +6,7 @@ pybm3d/*.c
 build/
 *.egg-info/
 *.eggs
+dist
 
 # C extensions
 *.so

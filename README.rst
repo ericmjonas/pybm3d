@@ -64,6 +64,6 @@ This project is released under the terms of the `GPL3 license <https://opensourc
     :target: https://travis-ci.org/ericmjonas/pybm3d/
     :alt: Travis-CI Status
 
-.. |code_quality| image:: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/badges/quality-score.png?b=develop
-    :target: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/?branch=develop
+.. |code_quality| image:: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/badges/quality-score.png?b=master
+    :target: https://scrutinizer-ci.com/g/ericmjonas/pybm3d/?branch=master
     :alt: Scrutinizer Code Quality
