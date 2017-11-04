@@ -35,7 +35,7 @@ cdef extern from "../bm3d_src/bm3d.h":
                  const bool verbose)
 
 
-cpdef float[:,:,:] run_bm3d_wrap(
+cpdef float[:,:,:] run_bm3d_raw(
     float[:,:,:] input_array,
     float sigma,
     bool useSD_h=True,
@@ -73,12 +73,12 @@ cpdef float[:,:,:] run_bm3d_wrap(
 
     color_space_i = PARAMS.get(color_space)
     if color_space_i is None:
-        raise ValueError("Unknown color_space, must be 'RGB', 'YUV', 'OPP'"
-                         " or 'YCBCR'")
+        raise ValueError("Unknown color_space, must be 'RGB', 'YUV', 'OPP' "
+                         "or 'YCBCR'")
 
     if patch_size < 0:
-        raise ValueError("The patch_size parameter must be 0 (default"
-                         " behavior) or larger than 0 (size to be used).")
+        raise ValueError("The patch_size parameter must be 0 (default "
+                         "behavior) or larger than 0 (size to be used).")
 
     cdef vector[float] input_image, basic_image, output_image
 
@@ -103,7 +103,8 @@ cpdef float[:,:,:] run_bm3d_wrap(
                    patch_size,
                    verbose)
     if ret != 0:
-        raise Exception("run_bmd3d returned an error, ret_val=%d" % ret)
+        raise Exception("Executing the C function `run_bmd3d` returned "
+                        "with an error: {%d}".format(ret))
 
     cdef np.ndarray output_array = np.zeros([height, width, chnls],
                                             dtype=np.float32)
@@ -129,15 +130,19 @@ def bm3d(input_array, *args, clip=True, **kwargs):
     input_array = np.array(input_array)
     initial_shape, initial_dtype = input_array.shape, input_array.dtype
 
-    input_array = np.atleast_3d(input_array).astype(np.float32)
+    if not np.issubdtype(initial_dtype, np.integer):
+        raise TypeError("Only integer data types are supported. "
+                        "Provided type: {}.".format(initial_dtype))
 
-    out = run_bm3d_wrap(input_array, *args, **kwargs)
+    input_array = np.atleast_3d(input_array).astype(np.float32)
+    if input_array.shape[2] not in [1, 3]:
+        raise IndexError("Only 1 or 3 color channel images are supported. "
+                         "Provided shape: {}".format(initial_shape))
+
+    out = run_bm3d_raw(input_array, *args, **kwargs)
     out = np.array(out, dtype=initial_dtype).reshape(initial_shape)
     if clip:
-        if np.issubdtype(initial_dtype, np.integer):
-            dtype_info = np.iinfo(initial_dtype)
-        else:
-            dtype_info = np.finfo(initial_dtype)
+        dtype_info = np.iinfo(initial_dtype)
         out = np.clip(out, dtype_info.min, dtype_info.max)
 
     return out

@@ -92,3 +92,27 @@ def test_fail_color_space_param(noise_data):
 
     with pytest.raises(ValueError):
         pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, color_space="not_supported")
+
+
+def test_fail_no_integer_input(noise_data):
+    """Tests expected failure for inputs with type Float."""
+    _, noisy_img, noise_std_dev = noise_data
+
+    noisy_img = noisy_img.astype(np.float)
+
+    with pytest.raises(TypeError):
+        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
+
+
+def test_fail_wrong_num_channel_input(noise_data):
+    """Tests expected failure for inputs with wrong number of channels.
+
+    Allowed number of color channels are 1 or 3.
+    """
+    _, noisy_img, noise_std_dev = noise_data
+
+    # build 2 channel input
+    noisy_img = np.array([noisy_img, noisy_img]).transpose((1, 2, 0))
+
+    with pytest.raises(IndexError):
+        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
