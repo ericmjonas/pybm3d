@@ -51,6 +51,19 @@ ________
 |                                                                              |
 +------------------------------------------------------------------------------+
 
+Testing
+________
+PyBM3D is tested and linted using `tox <https://tox.readthedocs.io/en/latest/>`_, *pytest* and *flake8*. In order to run all tests for multiple Python versions do the following:
+
+1. Install supported Python versions (2.7 and 3.6) with `pyenv <https://github.com/pyenv/pyenv>`_
+
+3. ``pip install tox``
+
+2. Run tests by executing:
+
+   a. All test environments: ``tox``
+   b. Single environment: ``tox -e env`` with an ``env`` specified in ``tox.ini``
+
 License
 ________
 This project is released under the terms of the `GPL3 license <https://opensource.org/licenses/GPL-3.0>`_.
