@@ -112,9 +112,12 @@ class CustomBuildExt(_build_ext):
 
 
 # optimize to the current CPU and enable warnings
-extra_compile_args = {'unix': ['-march=native', '-Wall', '-Wextra', ],
+extra_compile_args = {'unix': ['-march=native',
+                               '-Wall',
+                               '-Wextra',
+                               '-fopenmp', ],
                       'c_args': ['-std=c99', ]}
-libraries = ["png", "tiff", "jpeg", "fftw3", "fftw3f"]
+libraries = ['png', 'tiff', 'jpeg', 'fftw3', 'fftw3f', 'gomp']
 ext_modules = [Extension("pybm3d.bm3d",
                          language="c++",
                          sources=["pybm3d/bm3d.pyx",
@@ -125,16 +128,21 @@ ext_modules = [Extension("pybm3d.bm3d",
                          extra_compile_args=extra_compile_args,
                          libraries=libraries)]
 
+version = '0.2.1'
+url = 'https://github.com/ericmjonas/pybm3d'
+download_url = os.path.join(url,
+                            'releases/download/v' + version,
+                            'pybm3d-' + version + '.tar.gz')
 setup(
     name='pybm3d',
-    version='0.2.1',
+    version=version,
     description='Python wrapper around BM3D',
     author='Eric Jonas',
     author_email='jonas@ericjonas.com',
     maintainer='Tim Meinhardt',
     maintainer_email='meinhardt.tim@gmail.com',
-    url='https://github.com/ericmjonas/pybm3d',
-    download_url='https://github.com/ericmjonas/pybm3d/releases/download/v0.2.1/pybm3d-0.2.1.tar.gz',
+    url=url,
+    download_url=download_url,
     zip_safe=False,
     packages=['pybm3d'],
     ext_modules=ext_modules,
