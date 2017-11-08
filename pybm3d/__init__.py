@@ -1,5 +1,4 @@
 """PyBM3D package for image denoising."""
-import pybm3d.bm3d as bm3d
+from .bm3d import BM3D_PARAMS, bm3d, bm3d_raw
 
-
-__all__ = ['bm3d']
+__all__ = ['BM3D_PARAMS', 'bm3d', 'bm3d_raw']

@@ -6,17 +6,12 @@ from libcpp cimport bool
 cimport numpy as np
 
 
-__all__ = ['PARAMS', 'bm3d']
+__all__ = ['BM3D_PARAMS', 'bm3d', 'bm3d_raw']
 
 
-PARAMS = {"YUV": 0,
-          "YCBCR": 1,
-          "OPP": 2,
-          "RGB": 3,
-          "DCT": 4,
-          "BIOR": 5,
-          "HADAMARD": 6,
-          "NONE": 7}
+BM3D_PARAMS = {'color_space': {'YUV': 0, 'YCBCR': 1, 'OPP': 2, 'RGB': 3},
+               'tau_2D_hard': {'DCT': 4, 'BIOR': 5,},
+               'tau_2D_wien': {'DCT': 4, 'BIOR': 5,}}
 
 
 cdef extern from "../bm3d_src/bm3d.h":
@@ -35,7 +30,7 @@ cdef extern from "../bm3d_src/bm3d.h":
                  const bool verbose)
 
 
-cpdef float[:,:,:] run_bm3d_raw(
+cpdef float[:,:,:] bm3d_raw(
     float[:,:,:] input_array,
     float sigma,
     bool useSD_h=True,
@@ -63,15 +58,15 @@ cpdef float[:,:,:] run_bm3d_raw(
     on every 3D group for the first (resp. second) part.
     Allowed values are 'DCT' and 'BIOR';
     """
-    tau_2D_hard_i = PARAMS.get(tau_2D_hard)
+    tau_2D_hard_i = BM3D_PARAMS['tau_2D_hard'].get(tau_2D_hard)
     if tau_2D_hard_i is None:
         raise ValueError("Unknown tau_2d_hard, must be 'DCT' or 'BIOR'")
 
-    tau_2D_wien_i = PARAMS.get(tau_2D_wien)
+    tau_2D_wien_i = BM3D_PARAMS['tau_2D_wien'].get(tau_2D_wien)
     if tau_2D_wien_i is None:
         raise ValueError("Unknown tau_2d_wien, must be 'DCT' or 'BIOR'")
 
-    color_space_i = PARAMS.get(color_space)
+    color_space_i = BM3D_PARAMS['color_space'].get(color_space)
     if color_space_i is None:
         raise ValueError("Unknown color_space, must be 'RGB', 'YUV', 'OPP' "
                          "or 'YCBCR'")
@@ -139,7 +134,7 @@ def bm3d(input_array, *args, clip=True, **kwargs):
         raise IndexError("Only 1 or 3 color channel images are supported. "
                          "Provided shape: {}".format(initial_shape))
 
-    out = run_bm3d_raw(input_array, *args, **kwargs)
+    out = bm3d_raw(input_array, *args, **kwargs)
     out = np.array(out, dtype=initial_dtype).reshape(initial_shape)
     if clip:
         dtype_info = np.iinfo(initial_dtype)

@@ -7,7 +7,7 @@ PyBM3D
 
 This Python package provides an interface for the BM3D denoising strategy which is based on enhanced sparse representations in the transform-domain. The enhancement of the sparsity is achieved by grouping similar 2D image fragments (e.g. blocks) into 3D data arrays. Visit the offical BM3D `website <http://www.cs.tut.fi/~foi/GCF-BM3D/>`_ for a detailed explanation, benchmark results and other related works.
 
-The core C implementation of BM3D is based on the `work <http://www.ipol.im/pub/art/2012/l-bm3d/>`_ of Marc Lebrun.
+The core C implementation of BM3D is largely based on the `work <http://www.ipol.im/pub/art/2012/l-bm3d/>`_ of Marc Lebrun.
 
 Installation
 ____________
@@ -41,7 +41,7 @@ ________
 |                                                                              |
 |  noisy_img = img + noise                                                     |
 |                                                                              |
-|  out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)                            |
+|  out = pybm3d.bm3d(noisy_img, noise_std_dev)                                 |
 |                                                                              |
 |  noise_psnr = compare_psnr(img, noisy_img)                                   |
 |  out_psnr = compare_psnr(img, out)                                           |

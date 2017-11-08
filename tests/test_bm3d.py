@@ -35,14 +35,14 @@ def color_noise_data():
 def test_import():
     """Tests for BM3D function availability."""
     import pybm3d
-    assert callable(pybm3d.bm3d.bm3d)
+    assert callable(pybm3d.bm3d)
 
 
 def test_bm3d(noise_data):
     """Tests BM3D grayscale image denoising."""
     img, noisy_img, noise_std_dev = noise_data
 
-    out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
+    out = pybm3d.bm3d(noisy_img, noise_std_dev)
 
     noise_psnr = compare_psnr(img, noisy_img)
     out_psnr = compare_psnr(img, out)
@@ -54,7 +54,7 @@ def test_bm3d_color(color_noise_data):
     """Tests BM3D color image denoising."""
     img, noisy_img, noise_std_dev = color_noise_data
 
-    out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
+    out = pybm3d.bm3d(noisy_img, noise_std_dev)
 
     noise_psnr = compare_psnr(img, noisy_img)
     out_psnr = compare_psnr(img, out)
@@ -67,7 +67,7 @@ def test_fail_patch_size_param(noise_data):
     _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, patch_size=-1)
+        pybm3d.bm3d(noisy_img, noise_std_dev, patch_size=-1)
 
 
 def test_fail_tau_2d_hard_param(noise_data):
@@ -75,7 +75,7 @@ def test_fail_tau_2d_hard_param(noise_data):
     _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, tau_2D_hard="not_supported")
+        pybm3d.bm3d(noisy_img, noise_std_dev, tau_2D_hard="not_supported")
 
 
 def test_fail_tau_2d_wien_param(noise_data):
@@ -83,7 +83,7 @@ def test_fail_tau_2d_wien_param(noise_data):
     _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, tau_2D_wien="not_supported")
+        pybm3d.bm3d(noisy_img, noise_std_dev, tau_2D_wien="not_supported")
 
 
 def test_fail_color_space_param(noise_data):
@@ -91,7 +91,7 @@ def test_fail_color_space_param(noise_data):
     _, noisy_img, noise_std_dev = noise_data
 
     with pytest.raises(ValueError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev, color_space="not_supported")
+        pybm3d.bm3d(noisy_img, noise_std_dev, color_space="not_supported")
 
 
 def test_fail_no_integer_input(noise_data):
@@ -101,7 +101,7 @@ def test_fail_no_integer_input(noise_data):
     noisy_img = noisy_img.astype(np.float)
 
     with pytest.raises(TypeError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
+        pybm3d.bm3d(noisy_img, noise_std_dev)
 
 
 def test_fail_wrong_num_channel_input(noise_data):
@@ -115,4 +115,4 @@ def test_fail_wrong_num_channel_input(noise_data):
     noisy_img = np.array([noisy_img, noisy_img]).transpose((1, 2, 0))
 
     with pytest.raises(IndexError):
-        pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)
+        pybm3d.bm3d(noisy_img, noise_std_dev)
