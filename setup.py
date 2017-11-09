@@ -3,6 +3,13 @@ import os
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
 
+import tempfile
+import shutil
+import distutils.sysconfig
+import distutils.ccompiler
+from distutils.errors import CompileError, LinkError
+from textwrap import dedent
+
 
 class CustomBuildExt(_build_ext):
     """Custom build extension class."""
@@ -111,13 +118,65 @@ class CustomBuildExt(_build_ext):
         return cuda_config
 
 
+def find_library(library, header_file=None, extra_preargs=[]):
+    """Find C library.
+
+    Naively tries to compile some C code with the respective library and
+    assumes that the library is not available if compilation fails.
+    """
+    if header_file is None:
+        header_file = library + '.h'
+
+    c_code = dedent("""
+    #include <{}>
+
+    int main(int argc, char* argv[])
+    {{
+        return 0;
+    }}
+    """.format(header_file))
+    tmp_dir = tempfile.mkdtemp(prefix='tmp_find_library_')
+    bin_file_name = os.path.join(tmp_dir, "{}_file".format(library))
+    file_name = bin_file_name + '.c'
+    with open(file_name, 'w') as fp:
+        fp.write(c_code)
+
+    compiler = distutils.ccompiler.new_compiler()
+    assert isinstance(compiler, distutils.ccompiler.CCompiler)
+    distutils.sysconfig.customize_compiler(compiler)
+
+    try:
+        compiler.link_executable(
+            compiler.compile([file_name],
+                             extra_preargs=extra_preargs,),
+            bin_file_name,
+            libraries=[library],)
+    except (CompileError, LinkError):
+        # print('{} library not found.'.format(library))
+        return False
+    else:
+        return True
+    finally:
+        shutil.rmtree(tmp_dir)
+
+
+if not find_library('fftw3'):
+    raise ImportError('FFTW3 C library is not installed. Please install:\n'
+                      '\tLinux: `sudo apt-get install libfftw3-dev`\n'
+                      '\tOSX: `brew update && brew install fftw`')
+
 # optimize to the current CPU and enable warnings
 extra_compile_args = {'unix': ['-march=native',
                                '-Wall',
-                               '-Wextra',
-                               '-fopenmp', ],
+                               '-Wextra', ],
                       'c_args': ['-std=c99', ]}
-libraries = ['png', 'tiff', 'jpeg', 'fftw3', 'fftw3f', 'gomp']
+libraries = ['png', 'tiff', 'jpeg', 'fftw3', 'fftw3f', ]
+
+# activate OpenMP if library is available
+if find_library('gomp', 'omp.h', ['-fopenmp']):
+    extra_compile_args['unix'] += ['-fopenmp']
+    libraries += ['gomp']
+
 ext_modules = [Extension("pybm3d.bm3d",
                          language="c++",
                          sources=["pybm3d/bm3d.pyx",

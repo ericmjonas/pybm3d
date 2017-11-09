@@ -13,7 +13,7 @@ Installation
 ____________
 PyBM3D is supported for Linux and OSX and Python 2.7 and 3.6. Please follow the installation instructions:
 
-1. FFTW3:
+1. Install `FFTW3 <http://www.fftw.org/>`_:
 
    a. Linux: ``sudo apt-get install libfftw3-dev``
    b. OSX: ``brew update && brew install fftw``
@@ -28,14 +28,13 @@ ________
 | .. code:: python                                                             |
 |                                                                              |
 |  import numpy as np                                                          |
-|  import skimage.data                                                         |
-|  from skimage.measure import compare_psnr                                    |
+|  from skimage import data, measure                                           |
 |                                                                              |
 |  import pybm3d                                                               |
 |                                                                              |
 |                                                                              |
-|  noise_std_dev = 40                                                          |
-|  img = skimage.data.astronaut()                                              |
+|  noise_std_dev = 40.0                                                        |
+|  img = data.astronaut()                                                      |
 |  noise = np.random.normal(scale=noise_std_dev,                               |
 |                           size=img.shape).astype(img.dtype)                  |
 |                                                                              |
@@ -43,8 +42,8 @@ ________
 |                                                                              |
 |  out = pybm3d.bm3d(noisy_img, noise_std_dev)                                 |
 |                                                                              |
-|  noise_psnr = compare_psnr(img, noisy_img)                                   |
-|  out_psnr = compare_psnr(img, out)                                           |
+|  noise_psnr = measure.compare_psnr(img, noisy_img)                           |
+|  out_psnr = measure.compare_psnr(img, out)                                   |
 |                                                                              |
 |  print("PSNR of noisy image: ", noise_psnr)                                  |
 |  print("PSNR of reconstructed image: ", out_psnr)                            |
