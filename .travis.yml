@@ -19,7 +19,7 @@ matrix:
     before_install:
       - brew update
       # Python 2.7 is already installed
-      - brew install fftw
+      - brew install fftw gcc
       - virtualenv env -p python
       - source env/bin/activate
     env: TOX_ENV=py27
@@ -28,7 +28,7 @@ matrix:
     language: generic
     before_install:
       - brew update
-      - brew install python3 fftw
+      - brew install python3 fftw gcc
       - virtualenv env -p python3
       - source env/bin/activate
     env: TOX_ENV=py36

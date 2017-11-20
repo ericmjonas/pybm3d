@@ -15,8 +15,13 @@ PyBM3D is supported for Linux and OSX and Python 2.7 and 3.6. Please follow the 
 
 1. Install `FFTW3 <http://www.fftw.org/>`_:
 
-   a. Linux: ``sudo apt-get install libfftw3-dev``
-   b. OSX: ``brew update && brew install fftw``
+    a. Linux: ``sudo apt-get update && sudo apt-get install libfftw3-dev``
+    b. OSX: ``brew update && brew install fftw``
+
+1. (**Optional**, for multi thread support) Install compiler with `OpenMP <http://www.openmp.org/>`_ support:
+
+    a. Linux: ``sudo apt-get update && sudo apt-get install gcc``
+    b. OSX: ``brew update && brew install gcc``
 
 2. ``pip install pybm3d``
 
@@ -60,8 +65,8 @@ PyBM3D is tested and linted using `tox <https://tox.readthedocs.io/en/latest/>`_
 
 2. Run tests by executing:
 
-   a. All test environments: ``tox``
-   b. Single environment: ``tox -e env`` with an ``env`` specified in ``tox.ini``
+    a. All test environments: ``tox``
+    b. Single environment: ``tox -e env`` with an ``env`` specified in ``tox.ini``
 
 License
 ________

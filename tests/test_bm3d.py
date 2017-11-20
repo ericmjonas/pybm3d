@@ -2,10 +2,11 @@
 # coding=utf-8
 """Tests for BM3D image denoising."""
 
-import pytest
+import multiprocessing
 import numpy as np
 import skimage.data
 from skimage.measure import compare_psnr
+import pytest
 
 import pybm3d
 
@@ -116,3 +117,15 @@ def test_fail_wrong_num_channel_input(noise_data):
 
     with pytest.raises(IndexError):
         pybm3d.bm3d(noisy_img, noise_std_dev)
+
+
+def test_fail_exceeding_num_threads(noise_data):
+    """Tests expected failure for exceeding num_threads parameter.
+
+    The parameter must not be larger than the number of available CPUs.
+    """
+    _, noisy_img, noise_std_dev = noise_data
+
+    with pytest.raises(ValueError):
+        num_threads = multiprocessing.cpu_count() + 1
+        pybm3d.bm3d(noisy_img, noise_std_dev, num_threads=num_threads)
