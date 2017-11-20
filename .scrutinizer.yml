@@ -5,4 +5,4 @@ checks:
 build:
     tests:
         override:
-            - tox -e flake8
+            - tox -e pylint

@@ -6,9 +6,9 @@ import re
 import tempfile
 from textwrap import dedent
 
-import distutils.sysconfig
-import distutils.ccompiler
-from distutils.errors import CompileError, LinkError
+import distutils.sysconfig  # pylint: disable=import-error
+import distutils.ccompiler  # pylint: disable=import-error, no-name-in-module
+from distutils.errors import CompileError, LinkError  # pylint: disable=import-error, no-name-in-module
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -57,14 +57,14 @@ class CustomBuildExt(_build_ext):
 
         # save references to the default compiler_so and _comple methods
         default_compiler_so = self.compiler.compiler_so
-        super = self.compiler._compile
+        default_compile = self.compiler._compile  # pylint: disable=protected-access
 
         # now redefine the _compile method. This gets executed for each
         # object but distutils doesn't have the ability to change compilers
         # based on source extension: we add it.
         def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
+            # pylint: disable=too-many-arguments
             if os.path.splitext(src)[1] == '.cu':
-                # use the nvcc for *.cu files
                 self.compiler.set_executable('compiler_so',
                                              self.cuda_config['nvcc'])
                 postargs = extra_postargs['nvcc']
@@ -75,19 +75,20 @@ class CustomBuildExt(_build_ext):
                 if os.path.splitext(src)[1] == '.c':
                     postargs = postargs + extra_postargs['c_args']
 
-            super(obj, src, ext, cc_args, postargs, pp_opts)
+            default_compile(obj, src, ext, cc_args, postargs, pp_opts)
             # reset the default compiler_so
             self.compiler.compiler_so = default_compiler_so
 
         # inject our redefined _compile method into the class
-        self.compiler._compile = _compile
+        self.compiler._compile = _compile  # pylint: disable=protected-access
 
     @staticmethod
     def load_cuda_config():
-        """Locate the CUDA environment on the system
+        """Locate the CUDA environment on the system.
+
         Returns a dict with keys 'home', 'nvcc', 'include', and 'lib64'
-        and values giving the absolute path to each directory.
-        """
+        and values giving the absolute path to each directory."""
+
         def find_in_path(name, path):
             """Finds a file by name in a search path."""
             for directory in path.split(os.pathsep):
@@ -132,8 +133,7 @@ def find_library(library, header_file=None, extra_preargs=None):
     if extra_preargs is None:
         extra_preargs = []
 
-    compiler = distutils.ccompiler.new_compiler()
-    assert isinstance(compiler, distutils.ccompiler.CCompiler)
+    compiler = distutils.ccompiler.new_compiler()  # pylint: disable=no-member
     distutils.sysconfig.customize_compiler(compiler)
 
     c_code = dedent("""

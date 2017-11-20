@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # coding=utf-8
 """Tests for BM3D image denoising."""
-
+# pylint: disable=redefined-outer-name
 import multiprocessing
+
 import numpy as np
 import skimage.data
 from skimage.measure import compare_psnr
-import pytest
 
 import pybm3d
+import pytest
 
 
 @pytest.fixture
@@ -35,7 +36,6 @@ def color_noise_data():
 
 def test_import():
     """Tests for BM3D function availability."""
-    import pybm3d
     assert callable(pybm3d.bm3d)
 
 
@@ -105,7 +105,7 @@ def test_fail_no_integer_input(noise_data):
         pybm3d.bm3d(noisy_img, noise_std_dev)
 
 
-def test_fail_wrong_num_channel_input(noise_data):
+def test_fail_num_channel_input(noise_data):
     """Tests expected failure for inputs with wrong number of channels.
 
     Allowed number of color channels are 1 or 3.

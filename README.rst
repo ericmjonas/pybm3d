@@ -18,7 +18,7 @@ PyBM3D is supported for Linux and OSX and Python 2.7 and 3.6. Please follow the 
     a. Linux: ``sudo apt-get update && sudo apt-get install libfftw3-dev``
     b. OSX: ``brew update && brew install fftw``
 
-1. (**Optional**, for multi thread support) Install compiler with `OpenMP <http://www.openmp.org/>`_ support:
+1. (**Optional**, for multithreading) Install compiler with `OpenMP <http://www.openmp.org/>`_ support:
 
     a. Linux: ``sudo apt-get update && sudo apt-get install gcc``
     b. OSX: ``brew update && brew install gcc``
@@ -45,7 +45,9 @@ ________
 |                                                                              |
 |  noisy_img = img + noise                                                     |
 |                                                                              |
-|  out = pybm3d.bm3d(noisy_img, noise_std_dev)                                 |
+|  out = pybm3d.bm3d(noisy_img,                                                |
+|                    noise_std_dev,                                            |
+|                    verbose=True)                                             |
 |                                                                              |
 |  noise_psnr = measure.compare_psnr(img, noisy_img)                           |
 |  out_psnr = measure.compare_psnr(img, out)                                   |

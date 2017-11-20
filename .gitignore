@@ -17,6 +17,7 @@ dist
 # Text editor backup files
 *~
 *.swp
+.vscode
 
 # Python
 .venv
