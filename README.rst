@@ -37,9 +37,10 @@ ________
 |  noise_std_dev = 40                                                          |
 |  img = skimage.data.astronaut()                                              |
 |  noise = np.random.normal(scale=noise_std_dev,                               |
-|                           size=img.shape).astype(img.dtype)                  |
+|                           size=img.shape).astype(np.int8)                    |
 |                                                                              |
-|  noisy_img = img + noise                                                     |
+|  # Avoid numeric overflow:                                                   |
+|  noisy_img = (img.astype(np.int16) + noise).clip(0, 255).astype(np.uint8)    |
 |                                                                              |
 |  out = pybm3d.bm3d.bm3d(noisy_img, noise_std_dev)                            |
 |                                                                              |
