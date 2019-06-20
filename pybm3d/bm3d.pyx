@@ -132,12 +132,12 @@ def bm3d(input_array, *args, clip=True, **kwargs):
     input_array = np.atleast_3d(input_array).astype(np.float32)
 
     out = run_bm3d_wrap(input_array, *args, **kwargs)
-    out = np.array(out, dtype=initial_dtype).reshape(initial_shape)
     if clip:
         if np.issubdtype(initial_dtype, np.integer):
             dtype_info = np.iinfo(initial_dtype)
         else:
             dtype_info = np.finfo(initial_dtype)
         out = np.clip(out, dtype_info.min, dtype_info.max)
+    out = np.array(out, dtype=initial_dtype).reshape(initial_shape)
 
     return out
